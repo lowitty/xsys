@@ -1,0 +1,14 @@
+1. service mysql start|stop|restart
+
+2. django-admin start project xsys
+
+3. manage.py migrate
+		sudo apt-get install python-mysqldb
+		
+		
+4. python manage.py startapp pkgs
+
+
+5. python manage.py makemigrations pkgs
+
+6. python manage.py sqlmigrate polls 0001

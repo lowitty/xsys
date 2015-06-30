@@ -1,0 +1,134 @@
+{% load staticfiles %}
+
+<link rel="stylesheet" type="text/css"
+href="{% static 'pkgs/ease/themes/metro-blue/easyui.css' %}">
+<link rel="stylesheet" type="text/css"
+href="{% static 'pkgs/ease/themes/icon.css' %}">
+<script src="{% static 'pkgs/jquery-1.11.3.js' %}"></script>
+<script src="{% static 'pkgs/jquery.cookie.js' %}"></script>
+<script src="{% static 'pkgs/ease/jquery.easyui.min.js' %}"></script>
+
+<div>
+	<div style="float: left; padding-left: 30px;">
+
+		<a id="btn_1" class="easyui-linkbutton"
+		data-options="iconCls:'icon-ok'">get . cellid</a>
+		<!-- <input type="button" id="btn_1" value="get . cellid"></input> -->
+		<p>
+			<a id="btn_2" class="easyui-linkbutton"
+			data-options="iconCls:'icon-ok'">pr ^EUtranCell(T|F)DD</a>
+			<!-- <input type="button" id="btn_2" value="pr ^EUtranCell(T|F)DD"></input> -->
+
+		<p>
+			<div style="padding-top: 30px;">
+				<input class="easyui-textbox" data-options="iconCls:'icon-search'"
+				id="intxt">
+				</input>
+				<p>
+					<a id="btn_3" class="easyui-linkbutton"
+					data-options="iconCls:'icon-search'">OK</a>
+			</div>
+	</div>
+
+	<div style="float: left; padding-left: 30px;">
+		<input id="txt" readonly="true" class="easyui-textbox" name="message"
+		data-options="multiline:true" style="width: 1000px; height: 550px;">
+		<!-- <textarea id="txt" readonly="readonly"
+		style="width: 1000px; height: 600px;"></textarea> -->
+	</div>
+</div>
+
+<div style="clear: both;"></div>
+
+<p>
+<p>
+	This is a very draft demo for integrating Moshell with web
+	application. The demo is in offline mode of moshell(DPKG package
+	instead of live node).
+</p>
+<p style="font-size:10px;">
+	Powered by EGX/PQ/QE/E, Yannik Wang.
+<p>
+
+	<script>
+		function getCookie(name) {
+			var cookieValue = null;
+			if (document.cookie && document.cookie != '') {
+				var cookies = document.cookie.split(';');
+				for (var i = 0; i < cookies.length; i++) {
+					var cookie = jQuery.trim(cookies[i]);
+					// Does this cookie string begin with the name we want?
+					if (cookie.substring(0, name.length + 1) == (name + '=')) {
+						cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+						break;
+					}
+				}
+			}
+			return cookieValue;
+		}
+
+		function issueAjax(s_cmd) {
+			$("#txt").textbox('setValue', "Executing the command: '" + s_cmd + "', please wait...");
+			//$("#txt").text("Executing the command: '" + s_cmd + "', please wait...");
+			var csrftoken = $.cookie('csrftoken');
+
+			//var csrftoken = getCookie('csrftoken');
+
+			function csrfSafeMethod(method) {
+				// these HTTP methods do not require CSRF protection
+				return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+			}
+
+
+			$.ajaxSetup({
+				beforeSend : function(xhr, settings) {
+					if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+						xhr.setRequestHeader("X-CSRFToken", csrftoken);
+					}
+				}
+			});
+
+			$.ajax({
+				url : '/pkgs/getStrCmd',
+				data : JSON.stringify({
+					"scmd" : s_cmd
+				}),
+				type : 'POST',
+				dataType : 'json',
+				contentType : 'application/json',
+				success : function(obj) {
+					//console.log(obj);
+					//$("#txt").text(obj["ret_str"]);
+					$("#txt").textbox('setValue', obj["ret_str"]);
+					//$("#txt").textbox.html("dasdasd\r\n" + "asdasdsa\r\n")
+				},
+				error : function() {
+					console.log("ajax post error!");
+					//$("#txt").text("ajax post error!");
+					$("#txt").textbox('setValue', "ajax post error!");
+				}
+			});
+		}
+
+
+		$(document).ready(function() {
+
+			$("#btn_1").bind("click", function() {
+				issueAjax("get . cellid");
+			});
+
+			$("#btn_2").bind("click", function() {
+				issueAjax("pr ^EUtranCell(T|F)DD");
+			});
+
+			$("#btn_3").bind("click", function() {
+				cmd = $("#intxt").val().trim();
+				if (cmd.length > 0) {
+					issueAjax(cmd);
+				} else {
+					$.messager.alert('Warning', "empty command doesn't make any sense, try some real commands. :-)");
+					//alert("empty command doesn't make any sense, try some real commands. :-)");
+				}
+			});
+		});
+	</script>
