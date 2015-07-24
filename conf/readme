@@ -12,3 +12,36 @@
 5. python manage.py makemigrations pkgs
 
 6. python manage.py sqlmigrate polls 0001
+
+
+uwsgi --socket 127.0.0.1:8181 --chdir /srv/proj/xsys --wsgi-file xsys/wsgi.py --master --processes 2 --threads 2 --stats 127.0.0.1:9191 --uid 1000 --gid 2000 &
+service nginx start
+
+
+server{
+    listen       8888;
+    server_name  localhost;
+
+    #charset koi8-r;
+
+    #access_log  logs/host.access.log  main;
+
+    location / {
+     include        uwsgi_params;
+     uwsgi_pass     127.0.0.1:8181;
+    }
+
+    location /static/ {
+     alias /srv/proj/xsys/pkgs/static/;
+     #alias /srv/proj/xsys/pkgs/templates/;
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   html;
+    }
+}

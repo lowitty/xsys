@@ -8,6 +8,8 @@ href="{% static 'pkgs/ease/themes/icon.css' %}">
 <script src="{% static 'pkgs/jquery.cookie.js' %}"></script>
 <script src="{% static 'pkgs/ease/jquery.easyui.min.js' %}"></script>
 
+{% csrf_token %}
+
 <div>
 	<div style="float: left; padding-left: 30px;">
 
@@ -91,7 +93,7 @@ href="{% static 'pkgs/ease/themes/icon.css' %}">
 			$.ajax({
 				url : '/pkgs/getStrCmd',
 				data : JSON.stringify({
-					"scmd" : s_cmd
+					"scmd" : s_cmd,
 				}),
 				type : 'POST',
 				dataType : 'json',

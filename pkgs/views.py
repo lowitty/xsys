@@ -14,10 +14,9 @@ def index(request):
     return HttpResponse(template.render(context))
 
 
-
 def getStrCmd(request):
     s_cmd = str(json.loads(request.body)["scmd"])
-    mo_se = MoWhApi("/srv/installed/moshell/moshell", "/srv/installed/jdk1.8.0_45/bin/java", "/home/lowitty/Documents/LINUX备份文件/dpkg.zip")
+    mo_se = MoWhApi("/srv/installed/moshell/moshell", "/srv/installed/jdk1.8.0_45/bin/java", "/srv/tmp/dpkg.zip")
     mo_se.connect()
     cmd_ret = mo_se.sendCmd(s_cmd)
     mo_se.close()
